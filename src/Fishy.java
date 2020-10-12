@@ -6,53 +6,53 @@ import java.util.Random;
 
 //wish list:
 /*
+ * - fix bg fish color thing?
  * - include argument exceptions for invalid types (negative points, illegal sizes, etc.
  * - verify that circle fish are okay
  * - testing!
- * - templates & clean up 
+ * - clean up 
+ */
+
+/* KL NOTES & CHANGES:
+ * - added TODO stubs to every method that still needs testing
+ * - added background width/height to utils class and imported to each relevant class by calling u.bgheight, etc.
+ *     to make changing the world size easy
+ * - tested all Utils methods
+ * - tested IFishPredicate methods
+ * - tested all IFish methods
+ * - ?? we'll never have yellow bg fish because we stop them from spawning above level 6 - do we want to fix this?
+ * - i changed the end game text's color to black - it was hard to read when it was on top of red fish
+ * - i changed the comparePositions function to use the distance function to be more accurate 
+ * - i added the getPoints method to the Utils class to scale the spawning of the bgfish - small fish are now more likely to spawn than big ones.
+ *    this fixes the issue we were having with there being way too many big fish, covering up all the small ones!
  */
 
 //a class to represent the world of a Fish Game
 class FishWorldFun extends World {
-  int width = 400;
-  int height = 200;
+  //standard height / width for Fish game stored in Utils class for convenience.
+  Utils u = new Utils();
+  int width = u.BACKGROUND_WIDTH;
+  int height = u.BACKGROUND_HEIGHT;
   Player player;
   ILoFish bgfish;
 
   // constructor
   FishWorldFun(Player player, ILoFish bgfish) {
-    /*
-     * TEMPLATE:
-     * Fields:
-     * 
-     * this.player ... Player
-     * this.bgfish ... ILoFish
-     * 
-     * Methods:
-     * this.onKeyEvent(String) ... World
-     * this.onTick() ... World
-     * this.makeScene() ... WorldScene
-     * this.lastScene(String) ... WorldScene
-     * this.WorldEnds() ... WorldEnd
-     * 
-     * Methods for fields:
-     * see template for Player
-     * see template for ILoFish
-     */
     super();
     this.player = player;
     this.bgfish = bgfish;
   }
 
-//Move the Blob when the player presses a key and checks if the player can eat any of the bgfish
+  //TODO : test
+  //Move the Blob when the player presses a key and checks if the player can eat any of the bgfish
   public World onKeyEvent(String ke) {
     if (ke.equals("x"))
       return this.endOfWorld("Goodbye");
     else {
       Player newPlayer = this.player.movePlayer(ke);
       return new FishWorldFun(
-          this.bgfish.filterByPlayer(new byEaten(), newPlayer).growByAll(newPlayer),
-          this.bgfish.filterByPlayer(new byNotEaten(), newPlayer));
+          this.bgfish.filterByPlayer(new ByEaten(), newPlayer).growByAll(newPlayer),
+          this.bgfish.filterByPlayer(new ByNotEaten(), newPlayer));
     }
   }
 
@@ -63,17 +63,20 @@ class FishWorldFun extends World {
    * - move each active BGFish by 5 pixels in it's current direction
    * - checks if Player is eating any of the BGFish
    */
+  //TODO : test
   public World onTick() {
     ILoFish newBGFish = this.bgfish.doOnTick();
     return new FishWorldFun(
-        newBGFish.filterByPlayer(new byEaten(), this.player).growByAll(this.player),
-        newBGFish.filterByPlayer(new byNotEaten(), this.player));
+        newBGFish.filterByPlayer(new ByEaten(), this.player).growByAll(this.player),
+        newBGFish.filterByPlayer(new ByNotEaten(), this.player));
   }
 
-//The entire background image for this world 
+  //TODO : test
+  //The entire background image for this world 
   public WorldImage ocean = new RectangleImage(this.width, this.height, OutlineMode.SOLID,
       Color.BLUE);
 
+  //TODO : test
   // produce the image of this world by adding the player and bgfish to the
   // background image
   public WorldScene makeScene() {
@@ -82,11 +85,13 @@ class FishWorldFun extends World {
         this.player.y);
   }
 
+  //TODO : test
   // produce the last image of this world by adding text to the image
   public WorldScene lastScene(String s) {
-    return this.makeScene().placeImageXY(new TextImage(s, Color.red), 100, 40);
+    return this.makeScene().placeImageXY(new TextImage(s, Color.BLACK), 100, 40);
   }
 
+  //TODO : test
   // checks whether the player has been eaten or has won
   public WorldEnd worldEnds() {
     // if the player fish gets eaten by a bigger bgfish, stop
@@ -105,46 +110,55 @@ class FishWorldFun extends World {
 
 //represents an arbitrary list of BGFish 
 interface ILoFish {
+  //TODO : test
   // moves every fish in the list
   ILoFish moveAllFish();
 
+  //TODO : test
   // places all of the fish in the list on the given image
   WorldScene placeFish(WorldScene bg);
 
+  //TODO : test
   // did player get eaten by any of the bgfish?
   boolean playerEaten(Player player);
 
-  //
+  //TODO : test
+  // determines whether or not to add a new fish to the world and moves every bgfish in the list
   ILoFish doOnTick();
 
+  //TODO : test
   // grows the player by every bgfish in the list
   Player growByAll(Player player);
 
-  // filters the list by the given predicate
+  // filters the list by the given predicate and player fish
   ILoFish filterByPlayer(IFishPredicate pred, Player player);
 }
 
 // a class to represent an empty list of Fish
 class MtLoFish implements ILoFish {
 
+  //TODO : test
   // moves every fish in the list
   public ILoFish moveAllFish() {
     return this;
   }
 
+  //TODO : test
   // places all of the fish on the list onto bg
   public WorldScene placeFish(WorldScene bg) {
     return bg;
   }
 
+  //TODO : test
   // did the Player fish get eaten by any of the BGFish?
   public boolean playerEaten(Player player) {
     return false;
   }
 
+  //TODO : test
   // determines if a new fish is created and moves the fish in this
   public ILoFish doOnTick() {
-    if (new Random().nextInt(50) % 3 == 0) {
+    if (new Random().nextInt(50) % 5 == 0) {
       return new ConsLoFish(new BGFish(), this.moveAllFish());
     }
     else {
@@ -152,6 +166,7 @@ class MtLoFish implements ILoFish {
     }
   }
 
+  //TODO : test
   // grows player by every fish in the list
   public Player growByAll(Player player) {
     return player;
@@ -164,7 +179,7 @@ class MtLoFish implements ILoFish {
 
 }
 
-// a class to represent a non-empty list of Fish
+// a class to represent a non-empty list of BGFish
 class ConsLoFish implements ILoFish {
   BGFish first;
   ILoFish rest;
@@ -174,6 +189,7 @@ class ConsLoFish implements ILoFish {
     this.rest = rest;
   }
 
+  //TODO : test
   // moves every fish in the list
   public ILoFish moveAllFish() {
     BGFish movedFish = this.first.moveBGFish();
@@ -185,20 +201,23 @@ class ConsLoFish implements ILoFish {
     }
   }
 
+  //TODO : test
   // places all of the fish on the list onto bg
   public WorldScene placeFish(WorldScene bg) {
     return this.rest.placeFish(bg).placeImageXY(this.first.drawFish(), this.first.x, this.first.y);
   }
 
+  //TODO : test
   // did the Player fish get eaten by any of the BGFish?
   public boolean playerEaten(Player player) {
     return (!player.canEat(this.first) && player.comparePositions(this.first))
         || this.rest.playerEaten(player);
   }
 
+  //TODO : test
   // determines if a new fish is created and moves the fish in this
   public ILoFish doOnTick() {
-    if (new Random().nextInt(50) % 3 == 0) {
+    if (new Random().nextInt(50) % 5 == 0) {
       return new ConsLoFish(new BGFish(), this.moveAllFish());
     }
     else {
@@ -206,6 +225,7 @@ class ConsLoFish implements ILoFish {
     }
   }
 
+  //TODO : test
   // grows the player by every bgfish in the list
   public Player growByAll(Player player) {
     return this.rest.growByAll(player.grow(this.first));
@@ -229,7 +249,7 @@ interface IFishPredicate {
 }
 
 // a class to ask if the first fish has eaten the second
-class byEaten implements IFishPredicate {
+class ByEaten implements IFishPredicate {
   // will first eat second?
   public boolean apply(AFish first, AFish second) {
     return first.canEat(second) && first.comparePositions(second);
@@ -237,8 +257,8 @@ class byEaten implements IFishPredicate {
 }
 
 //a class to ask if the first fish has not eaten the second
-class byNotEaten implements IFishPredicate {
-//will first not eat second?
+class ByNotEaten implements IFishPredicate {
+  //will first not eat second?
   public boolean apply(AFish first, AFish second) {
     return !(first.canEat(second) && first.comparePositions(second));
   }
@@ -246,14 +266,15 @@ class byNotEaten implements IFishPredicate {
 
 //represents a fish in the game
 interface IFish {
-  int BACKGROUND_WIDTH = 400;
-  int BACKGROUND_HEIGHT = 200;
+  Utils u = new Utils();
+  int BACKGROUND_WIDTH = u.BACKGROUND_WIDTH;
+  int BACKGROUND_HEIGHT = u.BACKGROUND_HEIGHT;
 
-  //
-  boolean comparePositions(AFish that);
-
-  //
+  // can this fish eat that fish?
   boolean canEat(AFish that);
+
+  // are this fish and that fish touching?
+  boolean comparePositions(AFish that);
 
   // draws an image to represent the fish
   WorldImage drawFish();
@@ -280,8 +301,8 @@ abstract class AFish implements IFish {
 
   // are this fish and that fish touching?
   public boolean comparePositions(AFish that) {
-    return Math.abs(this.x - that.x) < this.size + that.size
-        && Math.abs(this.y - that.y) < this.size + that.size;
+    return Math.sqrt(Math.pow(this.x - that.x, 2) 
+        + Math.pow(this.y - that.y, 2)) <= this.size + that.size;
   }
 
   // draws the image to represent the fish
@@ -338,7 +359,7 @@ class Player extends AFish {
     else
       return input;
   }
-
+  
   // grows the player fish in size when it eats a BGFish
   Player grow(BGFish that) {
     return new Player(this.x, this.y, this.points + that.points / 5);
@@ -372,17 +393,17 @@ class BGFish extends AFish {
   // for making a new random BGFish
   BGFish() {
     super(0, 0, 0);
-    boolean right = (new Random().nextInt(10) % 2 == 0);
+    boolean right = (new Random().nextInt(2) == 0);
     this.x = u.placeX(right);
     this.y = new Random().nextInt(BACKGROUND_HEIGHT);
     this.size = u.getSize(points);
-    this.points = new Random().nextInt(301);
+    this.points = u.getPoints(new Random().nextInt(11));
     this.isRight = right;
     this.isOff = (x < 0 - size || x > BACKGROUND_WIDTH + size);
     this.color = u.getColor(points);
 
   }
-
+  
   // moves the BGFish by 5 pixels in the direction it is going
   public BGFish moveBGFish() {
     if (this.isRight) {
@@ -392,7 +413,7 @@ class BGFish extends AFish {
       return new BGFish(this.x - 5, this.y, this.points, this.isRight);
     }
   }
-
+  
   // creates an image to represent the fish
   public WorldImage drawFish() {
     return new CircleImage(this.size, OutlineMode.SOLID, this.color);
@@ -400,7 +421,10 @@ class BGFish extends AFish {
 }
 
 class Utils {
-  // selects color for fish based on points
+  int BACKGROUND_WIDTH = 400;
+  int BACKGROUND_HEIGHT = 200;
+  
+  // sets the color for fish based on points
   Color getColor(int points) {
     if (points <= 100) {
       return Color.ORANGE;
@@ -416,7 +440,7 @@ class Utils {
     }
   }
 
-  // sets the size based on the point value
+  // sets the size of a fish based on it's point value
   /* 1: 0- 50
    * 2: 51 - 100
    * 3: 101 - 150
@@ -425,7 +449,6 @@ class Utils {
    * 6: 251 - 300
    * 7: 301 - 350
    * 8: 351 - 400
-   * TODO : scale for display purposes
    */
   int getSize(int points) {
     int scale = 10;
@@ -465,7 +488,7 @@ class Utils {
     }
   }
   
-//if input goes outside of bound, returns newPosition
+  //if input goes outside of bound, returns newPosition
  int checkBoundLesser(int input, int bound, int newPosition) {
    if (input < bound) {
      return newPosition;
@@ -482,7 +505,30 @@ class Utils {
       return 0;
     }
     else {
-      return 400;
+      return this.BACKGROUND_WIDTH;
+    }
+  }
+  
+  // out of 11: for 0-2, size 1; 3-5 size 2; 6-7 size 3; 8 size 4; 9 size 5; 10 size 6;
+  // weighs the probability for randomly generating bgfish point values
+  int getPoints(int generator) {
+    if (generator <= 2) {
+      return 25;
+    }
+    else if (generator <= 5) {
+      return 75;
+    }
+    else if (generator <= 7) {
+      return 125;
+    }
+    else if (generator == 8) {
+      return 175;
+    }
+    else if (generator == 9) {
+      return 225;
+    }
+    else {
+      return 275;
     }
   }
 }
@@ -491,28 +537,259 @@ class ExamplesFish {
   //background : width 400, height 200 
   //examples of Player fish : ALL HAVE COLOR = GREEN
   Player playerStart = new Player(); // radius 20, posn(200, 100), pts = 51
-  Player p1 = new Player(40, 200, 350); // radius 70, posn(40, 200), pts = 350
-  Player p2 = new Player(100, 100, 400); // radius 80 posn(100, 100) pts = 400 -> you win? 
-  Player p3 = new Player(100, 100, 100); // radius 20, posn(100, 100), pts = 100
+  Player pWin = new Player(100, 100, 400); // radius 80 posn(100, 100) pts = 400 -> you win? 
   Player pOffRight = new Player(430, 100, 125); // radius 30, posn(430, 100), pts = 125 -> off - screen?
   Player pOffLeft = new Player(-30, 100, 125); // radius 30, posn(-30, 100), pts = 125 -> off - screen?
   Player pOffUp = new Player(100, -30, 125); // radius 30, posn(100, -30), pts = 125 -> off - screen?
-  Player offBelow = new Player(100, 230, 125); // radius 30, posn(100, 230), pts = 125 -> off - screen?
+  Player pOffDown = new Player(100, 230, 125); // radius 30, posn(100, 230), pts = 125 -> off - screen?
+  Player p1 = new Player(100, 100, 50); // radius 10, posn(100, 100), pts = 50
+  Player p2 = new Player(100, 100, 100); // radius 20, posn(100, 100), pts = 100
+  Player p3 = new Player(100, 100, 150); // radius 30, posn(100, 100), pts = 150
+  Player p4 = new Player(100, 100, 200); // radius 40, posn(100, 100), pts = 200
+  Player p5 = new Player(100, 100, 250); // radius 50, posn(100, 100), pts = 250
+  Player p6 = new Player(100, 100, 300); // radius 60, posn(100, 100), pts = 300
+  Player p7 = new Player(100, 100, 350); // radius 70, posn(100, 100), pts = 350
   
   //examples of BGFish
   BGFish bgSize1 = new BGFish(100, 100, 25, true); //radius 10, posn(100, 100), pts = 25, traveling right, isOff F, color = Orange
-  BGFish bgSize2Right = new BGFish(82, 100, 75, true);
   BGFish bgSize2 = new BGFish(420, 100, 75, true); //radius 20, posn(420, 100) pts = 75, traveling right, isOff T, color = Orange
   BGFish bgSize3 = new BGFish(-25, 100, 125, false); // radius 30, posn(-25, 100), pts = 125, traveling left, isOff F, color = Red
   BGFish bgSize4 = new BGFish(300, 100, 125, false); // radius 30, posn(-25, 100), pts = 125, traveling left, isOff F, color = Red
+  BGFish bgSize6 = new BGFish(100, 140, 275, false); // radius 60, posn(-25, 100), pts = 275, traveling left, isOff F, color = Magenta
+  BGFish bgSize8 = new BGFish(300, 100, 375, false); // radius 80, posn(-25, 100), pts = 375, traveling left, isOff F, color = Yellow
+  
+  //for checking closeness to player of size 20 fish sitting at (100, 100)
+  BGFish bg1Edge = new BGFish(100, 130, 25, true); //radius 10, posn(90, 110), pts = 25, traveling right, isOff F, color = Orange
+  BGFish bg1On = new BGFish(95, 105, 25, true); //radius 10, posn(95, 105), pts = 25, traveling right, isOff F, color = Orange
+  BGFish bg1Off = new BGFish(140, 140, 25, false); //radius 10, posn(140, 140), pts = 25, traveling left, isOff F, color = Orange
+  BGFish bg2Edge = new BGFish(140, 100, 100, true); //radius 20, posn(120, 80), pts = 100, traveling right, isOff F, color = Orange
+  BGFish bg2On = new BGFish(95, 105, 100, false); //radius 20, posn(95, 105), pts = 100, traveling left, isOff F, color = Orange
+  BGFish bg2Off = new BGFish(70, 70, 100, true); //radius 20, posn(70, 70), pts = 100, traveling right, isOff F, color = Orange
+  BGFish bg3Edge = new BGFish(100, 150, 150, false); //radius 30, posn(130, 130), pts = 100, traveling left, isOff F, color = Red
+  BGFish bg3On = new BGFish(95, 105, 150, true); //radius 30, posn(95, 105), pts = 100, traveling right, isOff F, color = Red
+  BGFish bg3Off = new BGFish(40, 150, 150, true); //radius 30, posn(40, 150), pts = 100, traveling right, isOff F, color = Red
       
   //ILoFish examples
   ILoFish mt = new MtLoFish();
+  ILoFish bgList1 = new ConsLoFish(this.bg1Edge, this.mt);
+  ILoFish bgList2 = new ConsLoFish(this.bg2Edge, this.bgList1);
+  ILoFish bgList3 = new ConsLoFish(this.bg3Edge, this.bgList2);
+  ILoFish bgList4 = new ConsLoFish(this.bg2On, this.bgList3);
+  ILoFish bgList5 = new ConsLoFish(this.bg3Off, this.bgList4);
+  
+  ILoFish bgList5NotEatenp2 = new ConsLoFish(this.bg3Off, 
+      new ConsLoFish(this.bg2On, 
+          new ConsLoFish(this.bg3Edge, 
+              new ConsLoFish(this.bg2Edge, this.mt))));
+  
+  ILoFish bgList5NotEatenp3 = new ConsLoFish(this.bg3Off, 
+      new ConsLoFish(this.bg3Edge, this.mt));
+  
+  ILoFish bgList5Eatenp3 = new ConsLoFish(this.bg2On, 
+      new ConsLoFish(this.bg2Edge, new ConsLoFish(this.bg1Edge, this.mt)));
+  //Utils examples
+  Utils u = new Utils();
+  
+  //IFishPredicate examples
+  IFishPredicate byEaten = new ByEaten();
+  IFishPredicate byNotEaten = new ByNotEaten();
   
   boolean testWorld(Tester t) {
-//run the game
-  FishWorldFun w = new FishWorldFun(this.playerStart, new ConsLoFish(this.bgSize1,
-                                                        new ConsLoFish(this.bgSize2Right ,this.mt)));
-  return w.bigBang(400, 200, 0.3);
+  //run the game
+  FishWorldFun w = new FishWorldFun(this.playerStart, this.mt);
+  return false; //w.bigBang(400, 200, 0.3);
+  }
+  
+  /*
+   * BEGIN ILOFISH METHOD TESTING
+   */
+  
+  // test filterByPlayer method
+  boolean testFilterByPlayer(Tester t) {
+    return t.checkExpect(this.mt.filterByPlayer(this.byEaten, this.p2), this.mt)
+        && t.checkExpect(this.mt.filterByPlayer(this.byNotEaten, this.p2), this.mt)
+        && t.checkExpect(this.bgList1.filterByPlayer(this.byEaten, this.p2), this.bgList1)
+        && t.checkExpect(this.bgList1.filterByPlayer(this.byNotEaten, this.p2), this.mt)
+        && t.checkExpect(this.bgList5.filterByPlayer(this.byNotEaten, this.p2), this.bgList5NotEatenp2)
+        && t.checkExpect(this.bgList5.filterByPlayer(this.byEaten, this.p2), this.bgList1)
+        && t.checkExpect(this.bgList5.filterByPlayer(this.byNotEaten, this.p3), this.bgList5NotEatenp3)
+        && t.checkExpect(this.bgList5.filterByPlayer(this.byEaten, this.p3), this.bgList5Eatenp3);
+  }
+  
+  /*
+   * BEGIN IFISH METHOD TESTING
+   */
+  
+  //test comparePositions method
+  boolean testComparePositions(Tester t) {
+    return t.checkExpect(this.p2.comparePositions(this.bg1Edge), true)
+        && t.checkExpect(this.p2.comparePositions(this.bg1Off), false)
+        && t.checkExpect(this.p2.comparePositions(this.bg1On), true)
+        && t.checkExpect(this.p2.comparePositions(this.bg2Edge), true)
+        && t.checkExpect(this.p2.comparePositions(this.bgSize3), false);
+  }
+  
+  // test canEat method
+  boolean testCanEat(Tester t) {
+    return t.checkExpect(this.p2.canEat(this.bg1Edge), true)
+        && t.checkExpect(this.p2.canEat(this.bg2Edge), false)
+        && t.checkExpect(this.p2.canEat(this.bg3Edge), false);
+  }
+  
+  // test drawFish method
+  boolean testDrawFish(Tester t) {
+    return t.checkExpect(this.p2.drawFish(), new CircleImage(20, OutlineMode.SOLID, Color.GREEN))
+        && t.checkExpect(this.p7.drawFish(), new CircleImage(70, OutlineMode.SOLID, Color.GREEN))
+        && t.checkExpect(this.bg1Edge.drawFish(), new CircleImage(10, OutlineMode.SOLID, Color.ORANGE))
+        && t.checkExpect(this.bg3Edge.drawFish(), new CircleImage(30, OutlineMode.SOLID, Color.RED))
+        && t.checkExpect(this.bgSize6.drawFish(), new CircleImage(60, OutlineMode.SOLID, Color.MAGENTA))
+        && t.checkExpect(this.bgSize8.drawFish(), new CircleImage(80, OutlineMode.SOLID, Color.YELLOW));
+  }
+  
+  /*
+   * BEGIN PLAYER METHOD TESTING
+   */
+  
+  // test movePlayer method
+  boolean testMovePlayer(Tester t) {
+    return t.checkExpect(this.p2.movePlayer("up"), new Player(100, 95, 100)) 
+        && t.checkExpect(this.pOffUp.movePlayer("up"), new Player(100, u.BACKGROUND_HEIGHT, 125))
+        && t.checkExpect(this.p2.movePlayer( "down"), new Player(100, 105, 100)) 
+        && t.checkExpect(this.pOffDown.movePlayer( "down"), new Player(100, 0, 125))
+        && t.checkExpect(this.p2.movePlayer("left"), new Player(95, 100, 100)) 
+        && t.checkExpect(this.pOffLeft.movePlayer( "left"), new Player(u.BACKGROUND_WIDTH, 100, 125))
+        && t.checkExpect(this.p2.movePlayer("right"), new Player(105, 100, 100)) 
+        && t.checkExpect(this.pOffRight.movePlayer("right"), new Player(0, 100, 125));
+  }
+  
+  // test getNewPosition method
+  boolean testGetNewPosition(Tester t) {
+    return t.checkExpect(this.p2.getNewPosition(20, "up"), 20) 
+        && t.checkExpect(this.p2.getNewPosition(-20, "up"), -20)
+        && t.checkExpect(this.p2.getNewPosition(-40, "up"), u.BACKGROUND_HEIGHT) 
+        && t.checkExpect(this.p2.getNewPosition(20, "down"), 20) 
+        && t.checkExpect(this.p2.getNewPosition(u.BACKGROUND_HEIGHT + 20, "down"), u.BACKGROUND_HEIGHT + 20)
+        && t.checkExpect(this.p2.getNewPosition(u.BACKGROUND_HEIGHT + 40, "down"), 0)
+        && t.checkExpect(this.p2.getNewPosition(20, "left"), 20) 
+        && t.checkExpect(this.p2.getNewPosition(-20, "left"), -20)
+        && t.checkExpect(this.p2.getNewPosition(-40, "left"), u.BACKGROUND_WIDTH) 
+        && t.checkExpect(this.p2.getNewPosition(20, "right"), 20) 
+        && t.checkExpect(this.p2.getNewPosition(u.BACKGROUND_WIDTH + 20, "right"), u.BACKGROUND_WIDTH + 20)
+        && t.checkExpect(this.p2.getNewPosition(u.BACKGROUND_WIDTH + 40, "right"), 0);
+  }
+  
+  // test grow method
+  boolean testGrow(Tester t) {
+    return t.checkExpect(this.p2.grow(this.bg1Edge), new Player(100, 100, 105))
+        && t.checkExpect(this.p6.grow(this.bg3Edge), new Player(100, 100, 330))
+        && t.checkExpect(this.playerStart.grow(this.bg1Edge), new Player(200, 100, 56));
+  }
+  
+  // test gameWon method
+  boolean testGameWon(Tester t) {
+    return t.checkExpect(this.playerStart.gameWon(), false)
+        && t.checkExpect(this.pWin.gameWon(), true);
+  }
+  
+  /*
+   * BEGIN BGFISH METHOD TESTING
+   */
+  
+  // test moveBGFish method
+  boolean testMoveBGFish(Tester t) {
+    return t.checkExpect(this.bg1Edge.moveBGFish(), new BGFish(105, 130, 25, true))
+        && t.checkExpect(this.bg1Off.moveBGFish(), new BGFish(135, 140, 25, false));
+  }
+  
+  /*
+   * BEGIN IFISHPREDICATE METHOD TESTING
+   */
+  
+  //test apply method
+  boolean testApply(Tester t) {
+    return t.checkExpect(this.byEaten.apply(this.p2, this.bg1Edge), true)
+        && t.checkExpect(this.byEaten.apply(this.p2, this.bg1Off), false)
+        && t.checkExpect(this.byEaten.apply(this.p2, this.bg1On), true)
+        && t.checkExpect(this.byEaten.apply(this.p2, this.bg2Edge), false)
+        && t.checkExpect(this.byEaten.apply(this.p2, this.bg2Off), false)
+        && t.checkExpect(this.byEaten.apply(this.p2, this.bg2On), false)
+        && t.checkExpect(this.byEaten.apply(this.p2, this.bg3Edge), false)
+        && t.checkExpect(this.byEaten.apply(this.p2, this.bg3Off), false)
+        && t.checkExpect(this.byEaten.apply(this.p2, this.bg3On), false)
+        && t.checkExpect(this.byNotEaten.apply(this.p2, this.bg1Edge), false)
+        && t.checkExpect(this.byNotEaten.apply(this.p2, this.bg1Off), true)
+        && t.checkExpect(this.byNotEaten.apply(this.p2, this.bg1On), false)
+        && t.checkExpect(this.byNotEaten.apply(this.p2, this.bg2Edge), true)
+        && t.checkExpect(this.byNotEaten.apply(this.p2, this.bg2Off), true)
+        && t.checkExpect(this.byNotEaten.apply(this.p2, this.bg2On), true)
+        && t.checkExpect(this.byNotEaten.apply(this.p2, this.bg3Edge), true)
+        && t.checkExpect(this.byNotEaten.apply(this.p2, this.bg3Off), true)
+        && t.checkExpect(this.byNotEaten.apply(this.p2, this.bg3On), true);
+  }
+  
+  /*
+   * BEGIN UTILS METHOD TESTING
+   */
+  
+  //test the getColor method
+  boolean testGetColor(Tester t) {
+   return t.checkExpect(this.u.getColor(0), Color.ORANGE)
+       && t.checkExpect(this.u.getColor(50), Color.ORANGE)
+       && t.checkExpect(this.u.getColor(100), Color.ORANGE)
+       && t.checkExpect(this.u.getColor(150), Color.RED)
+       && t.checkExpect(this.u.getColor(200), Color.RED)
+       && t.checkExpect(this.u.getColor(250), Color.MAGENTA)
+       && t.checkExpect(this.u.getColor(300), Color.MAGENTA)
+       && t.checkExpect(this.u.getColor(350), Color.YELLOW)
+       && t.checkExpect(this.u.getColor(400), Color.YELLOW);
+ }
+  
+  //test the getSize method
+  boolean testGetSize(Tester t) {
+   return t.checkExpect(this.u.getSize(0), 10)
+       && t.checkExpect(this.u.getSize(50), 10)
+       && t.checkExpect(this.u.getSize(100), 20)
+       && t.checkExpect(this.u.getSize(150), 30)
+       && t.checkExpect(this.u.getSize(200), 40)
+       && t.checkExpect(this.u.getSize(250), 50)
+       && t.checkExpect(this.u.getSize(300), 60)
+       && t.checkExpect(this.u.getSize(350), 70)
+       && t.checkExpect(this.u.getSize(400), 80);
+ }
+  
+  //test the placeX method
+  boolean testCheckBoundGreater(Tester t) {
+   return t.checkExpect(this.u.checkBoundGreater(4, 5, 100), 4)
+       && t.checkExpect(this.u.checkBoundGreater(4, 4, 100), 4)
+       && t.checkExpect(this.u.checkBoundGreater(4, 3, 100), 100);
+ }
+  
+  //test the placeX method
+  boolean testCheckBoundLesser(Tester t) {
+   return t.checkExpect(this.u.checkBoundLesser(4, 5, 100), 100)
+       && t.checkExpect(this.u.checkBoundLesser(4, 4, 100), 4)
+       && t.checkExpect(this.u.checkBoundLesser(4, 3, 100), 4);
+ }
+ 
+  // test the placeX method
+  boolean testPlaceX(Tester t) {
+    return t.checkExpect(this.u.placeX(true), 0)
+        && t.checkExpect(this.u.placeX(false), 400);
+  }
+  
+  // test the getPoints method
+  boolean testGetPoints(Tester t) {
+    return t.checkExpect(this.u.getPoints(0), 25)
+        && t.checkExpect(this.u.getPoints(1), 25)
+        && t.checkExpect(this.u.getPoints(2), 25)
+        && t.checkExpect(this.u.getPoints(3), 75)
+        && t.checkExpect(this.u.getPoints(4), 75)
+        && t.checkExpect(this.u.getPoints(5), 75)
+        && t.checkExpect(this.u.getPoints(6), 125)
+        && t.checkExpect(this.u.getPoints(7), 125)
+        && t.checkExpect(this.u.getPoints(8), 175)
+        && t.checkExpect(this.u.getPoints(9), 225)
+        && t.checkExpect(this.u.getPoints(10), 275)
+        && t.checkExpect(this.u.getPoints(20), 275);
   }
 }
