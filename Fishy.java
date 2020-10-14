@@ -704,18 +704,17 @@ class ExamplesFish {
         && t.checkExpect(this.bgList5.playerEaten(p1), true); // eaten by fish  deeper in list
   }
   
-//  //test placeFish method  
-//  boolean testPlaceFish(Tester t) {
-//    WorldImage ocean = new RectangleImage(400, 200, OutlineMode.SOLID,
-//        Color.BLUE);
-//   WorldScene bg = this.getEmptyScene().placeImageXY(ocean, 200, 100);
-//    return t.checkExpect(this.mt.placeFish(bg), bg)
-//        && t.checkExpect(this.bgList1.placeFish(bg), bg.placeImageXY(this.bg1Edge.drawFish(), 90, 110))
-//        && t.checkExpect(this.bgList1.placeFish(bg), 
-//           bg.placeImageXY(this.bg1Edge.drawFish(), 90, 110).placeImageXY(this.bg2Edge.drawFish(), 120, 80));
+  //test placeFish method  
+  boolean testPlaceFish(Tester t) {
+    WorldImage ocean = new RectangleImage(400, 200, OutlineMode.SOLID,
+        Color.BLUE);
+   WorldScene bg = this.getEmptyScene().placeImageXY(ocean, 200, 100);
+    return t.checkExpect(this.mt.placeFish(bg), bg)
+        && t.checkExpect(this.bgList1.placeFish(bg), bg.placeImageXY(this.bg1Edge.drawFish(), 90, 110))
+        && t.checkExpect(this.bgList1.placeFish(bg), 
+           bg.placeImageXY(this.bg1Edge.drawFish(), 90, 110).placeImageXY(this.bg2Edge.drawFish(), 120, 80));
         
     
-  
   
   //test moveAllFish method 
   boolean testMoveAllFish(Tester t) {
