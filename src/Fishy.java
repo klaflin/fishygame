@@ -30,8 +30,9 @@ class FishWorldFun extends World {
   // Move the Blob when the player presses a key and checks if the player can eat
   // any of the bgfish
   public World onKeyEvent(String ke) {
-    if (ke.equals("x"))
+    if (ke.equals("x")) {
       return this.endOfWorld("Goodbye");
+    }
     else {
       Player newPlayer = this.player.movePlayer(ke);
       return new FishWorldFun(
@@ -309,8 +310,9 @@ class Player extends AFish {
     else if (ke.equals("down")) {
       return new Player(this.x, this.getNewPosition(this.y + 5, "down"), this.points);
     }
-    else
+    else {
       return this;
+    }
   }
 
   // wraps position of fish if it goes out of bounds
@@ -328,8 +330,9 @@ class Player extends AFish {
     else if (dir.equals("left")) {
       return u.checkBoundLesser(input, -this.size, BACKGROUND_WIDTH);
     }
-    else
+    else {
       return input;
+    }
   }
 
   // grows the player fish in size when it eats a BGFish
@@ -395,8 +398,8 @@ class BGFish extends AFish {
 }
 
 class Utils {
-  int BACKGROUND_WIDTH = 400;
-  int BACKGROUND_HEIGHT = 200;
+  final int BACKGROUND_WIDTH = 400;
+  final int BACKGROUND_HEIGHT = 200;
 
   // sets the color for bgfish based on points
   Color getColor(int points) {
@@ -509,14 +512,10 @@ class ExamplesFish {
   // examples of Player fish : ALL HAVE COLOR = GREEN
   Player playerStart = new Player(); // radius 20, posn(200, 100), pts = 51
   Player pWin = new Player(100, 100, 400); // radius 80 posn(100, 100) pts = 400 -> you win?
-  Player pOffRight = new Player(430, 100, 125); // radius 30, posn(430, 100), pts = 125 -> off -
-                                                // screen?
-  Player pOffLeft = new Player(-30, 100, 125); // radius 30, posn(-30, 100), pts = 125 -> off -
-                                               // screen?
-  Player pOffUp = new Player(100, -30, 125); // radius 30, posn(100, -30), pts = 125 -> off -
-                                             // screen?
-  Player pOffDown = new Player(100, 230, 125); // radius 30, posn(100, 230), pts = 125 -> off -
-                                               // screen?
+  Player pOffRight = new Player(430, 100, 125); // radius 30, posn(430, 100), pts = 125 -> off
+  Player pOffLeft = new Player(-30, 100, 125); // radius 30, posn(-30, 100), pts = 125 -> off
+  Player pOffUp = new Player(100, -30, 125); // radius 30, posn(100, -30), pts = 125 -> off
+  Player pOffDown = new Player(100, 230, 125); // radius 30, posn(100, 230), pts = 125 -> off
   Player p1 = new Player(100, 100, 50); // radius 10, posn(100, 100), pts = 50
   Player p2 = new Player(100, 100, 100); // radius 20, posn(100, 100), pts = 100
   Player p3 = new Player(100, 100, 150); // radius 30, posn(100, 100), pts = 150
@@ -526,38 +525,23 @@ class ExamplesFish {
   Player p7 = new Player(100, 100, 350); // radius 70, posn(100, 100), pts = 350
 
   // examples of BGFish
-  BGFish bgSize1 = new BGFish(100, 100, 25, true); // radius 10, posn(100, 100), pts = 25, traveling
-                                                   // right, isOff F, color = Orange
-  BGFish bgSize2 = new BGFish(420, 100, 75, true); // radius 20, posn(420, 100) pts = 75, traveling
-                                                   // right, isOff T, color = Orange
-  BGFish bgSize3 = new BGFish(-25, 100, 125, false); // radius 30, posn(-25, 100), pts = 125,
-                                                     // traveling left, isOff F, color = Red
-  BGFish bgSize4 = new BGFish(300, 100, 125, false); // radius 30, posn(-25, 100), pts = 125,
-                                                     // traveling left, isOff F, color = Red
-  BGFish bgSize6 = new BGFish(100, 140, 275, false); // radius 60, posn(-25, 100), pts = 275,
-                                                     // traveling left, isOff F, color = Magenta
-  BGFish bgSize8 = new BGFish(300, 100, 375, false); // radius 80, posn(-25, 100), pts = 375,
-                                                     // traveling left, isOff F, color = Yellow
+  BGFish bgSize1 = new BGFish(100, 100, 25, true);
+  BGFish bgSize2 = new BGFish(420, 100, 75, true);
+  BGFish bgSize3 = new BGFish(-25, 100, 125, false);
+  BGFish bgSize4 = new BGFish(300, 100, 125, false);
+  BGFish bgSize6 = new BGFish(100, 140, 275, false);
+  BGFish bgSize8 = new BGFish(300, 100, 375, false);
 
   // for checking closeness to player of size 20 fish sitting at (100, 100)
-  BGFish bg1Edge = new BGFish(100, 130, 25, true); // radius 10, posn(90, 110), pts = 25, traveling
-                                                   // right, isOff F, color = Orange
-  BGFish bg1On = new BGFish(95, 105, 25, true); // radius 10, posn(95, 105), pts = 25, traveling
-                                                // right, isOff F, color = Orange
-  BGFish bg1Off = new BGFish(140, 140, 25, false); // radius 10, posn(140, 140), pts = 25, traveling
-                                                   // left, isOff F, color = Orange
-  BGFish bg2Edge = new BGFish(140, 100, 100, true); // radius 20, posn(120, 80), pts = 100,
-                                                    // traveling right, isOff F, color = Orange
-  BGFish bg2On = new BGFish(95, 105, 100, false); // radius 20, posn(95, 105), pts = 100, traveling
-                                                  // left, isOff F, color = Orange
-  BGFish bg2Off = new BGFish(70, 70, 100, true); // radius 20, posn(70, 70), pts = 100, traveling
-                                                 // right, isOff F, color = Orange
-  BGFish bg3Edge = new BGFish(100, 150, 150, false); // radius 30, posn(130, 130), pts = 150,
-                                                     // traveling left, isOff F, color = Red
-  BGFish bg3On = new BGFish(95, 105, 150, true); // radius 30, posn(95, 105), pts = 150, traveling
-                                                 // right, isOff F, color = Red
-  BGFish bg3Off = new BGFish(40, 150, 150, true); // radius 30, posn(40, 150), pts = 150, traveling
-                                                  // right, isOff F, color = Red
+  BGFish bg1Edge = new BGFish(100, 130, 25, true);
+  BGFish bg1On = new BGFish(95, 105, 25, true);
+  BGFish bg1Off = new BGFish(140, 140, 25, false);
+  BGFish bg2Edge = new BGFish(140, 100, 100, true);
+  BGFish bg2On = new BGFish(95, 105, 100, false);
+  BGFish bg2Off = new BGFish(70, 70, 100, true);
+  BGFish bg3Edge = new BGFish(100, 150, 150, false);
+  BGFish bg3On = new BGFish(95, 105, 150, true);
+  BGFish bg3Off = new BGFish(40, 150, 150, true);
 
   // ILoFish examples
   ILoFish mt = new MtLoFish();
