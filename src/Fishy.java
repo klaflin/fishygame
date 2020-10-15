@@ -4,11 +4,6 @@ import javalib.worldimages.*;
 import java.awt.Color;
 import java.util.Random;
 
-//wish list:
-/*
- * - clean up 
- */
-
 //a class to represent the world of a Fish Game
 class FishWorldFun extends World {
   // standard height / width for Fish game stored in Utils class for convenience.
@@ -52,7 +47,6 @@ class FishWorldFun extends World {
    * - move each active BGFish by 5 pixels in it's current direction
    * - checks if Player is eating any of the BGFish
    */
-  // TODO : test
   public World onTick() {
     int generator = this.rand.nextInt(height);
     ILoFish newBGFish = this.bgfish.doOnTick(generator);
@@ -256,6 +250,7 @@ interface IFish {
   WorldImage drawFish();
 }
 
+//an abstract class for a Fish in a Fish Game
 abstract class AFish implements IFish {
   int x;
   int y;
@@ -286,6 +281,7 @@ abstract class AFish implements IFish {
 
 }
 
+// a class to represent a player Fish in a Fish Game
 class Player extends AFish {
   Color color;
 
@@ -352,6 +348,7 @@ class Player extends AFish {
   }
 }
 
+// a class to represent a background fish in a Fish Game
 class BGFish extends AFish {
   boolean isRight; // is the BGFish moving in the rightward direction?
   boolean isOff; // is the BGFish off the screen?
@@ -366,7 +363,7 @@ class BGFish extends AFish {
     this.isOff = (x < 0 - size || x > BACKGROUND_WIDTH + size);
   }
 
-  // for making a new random BGFish
+  // constructor for making a new random BGFish
   BGFish(int generator) {
     super(0, 0, 0);
     boolean right = (generator % 2 == 0);
@@ -401,7 +398,7 @@ class Utils {
   int BACKGROUND_WIDTH = 400;
   int BACKGROUND_HEIGHT = 200;
 
-  // sets the color for fish based on points
+  // sets the color for bgfish based on points
   Color getColor(int points) {
     if (points <= 100) {
       return Color.ORANGE;
@@ -452,7 +449,7 @@ class Utils {
     }
   }
 
-  // if input goes outside of bound, returns newPosition
+  // if input goes above the bound, returns newPosition
   int checkBoundGreater(int input, int bound, int newPosition) {
     if (input > bound) {
       return newPosition;
@@ -462,7 +459,7 @@ class Utils {
     }
   }
 
-  // if input goes outside of bound, returns newPosition
+  // if input goes below the bound, returns newPosition
   int checkBoundLesser(int input, int bound, int newPosition) {
     if (input < bound) {
       return newPosition;
@@ -483,8 +480,7 @@ class Utils {
     }
   }
 
-  // out of 11: for 0-2, size 1; 3-5 size 2; 6-7 size 3; 8 size 4; 9 size 5; 10
-  // size 6;
+  // for 0-2, size 1; 3-5 size 2; 6-7 size 3; 8 size 4; 9 size 5; 10 size 6;
   // weighs the probability for randomly generating bgfish point values
   int getPoints(int generator) {
     if (generator <= 2) {
@@ -780,9 +776,7 @@ class ExamplesFish {
             new CircleImage(10, OutlineMode.SOLID, Color.ORANGE))
         && t.checkExpect(this.bg3Edge.drawFish(), new CircleImage(30, OutlineMode.SOLID, Color.RED))
         && t.checkExpect(this.bgSize6.drawFish(),
-            new CircleImage(60, OutlineMode.SOLID, Color.MAGENTA))
-        && t.checkExpect(this.bgSize8.drawFish(),
-            new CircleImage(80, OutlineMode.SOLID, Color.YELLOW));
+            new CircleImage(60, OutlineMode.SOLID, Color.MAGENTA));
   }
 
   /*
@@ -880,9 +874,7 @@ class ExamplesFish {
         && t.checkExpect(this.u.getColor(150), Color.RED)
         && t.checkExpect(this.u.getColor(200), Color.RED)
         && t.checkExpect(this.u.getColor(250), Color.MAGENTA)
-        && t.checkExpect(this.u.getColor(300), Color.MAGENTA)
-        && t.checkExpect(this.u.getColor(350), Color.YELLOW)
-        && t.checkExpect(this.u.getColor(400), Color.YELLOW);
+        && t.checkExpect(this.u.getColor(300), Color.MAGENTA);
   }
 
   // test the getSize method
